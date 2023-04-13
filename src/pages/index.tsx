@@ -26,12 +26,17 @@ const Home: NextPage = () => {
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
         <nav className="min-w-screen sticky top-0 flex flex-row bg-[#7ca982] p-4 shadow">
           <span className="font-bold">Victor</span>
-          <span className="text-white">{sessionData.user.name}</span>
-          <button onClick={() => void signOut()}>Sign Out</button>
+          <span className="align-self-right text-white">
+            {sessionData.user.name}
+          </span>
+          <button
+            className="align-self-right hover:underline"
+            onClick={() => void signOut()}
+          >
+            Sign Out
+          </button>
         </nav>
-        <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
-          <AuthShowcase />
-        </main>
+        <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]"></main>
       </div>
     </>
   );
@@ -49,6 +54,7 @@ const LoggedOut: React.FC = () => {
       </Head>
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
         <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
+          <p className="font-lg text-[#e0eec6]">Victor</p>
           <AuthShowcase />
         </main>
       </div>
