@@ -30,7 +30,7 @@ const Home: NextPage = () => {
             {sessionData.user.name}
           </span>
           <button
-            className="justify-self-end px-2 min-width-max hover:underline"
+            className="justify-self-end px-2 min-w-max hover:underline"
             onClick={() => void signOut()}
           >
             Sign Out
