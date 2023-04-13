@@ -26,11 +26,11 @@ const Home: NextPage = () => {
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
         <nav className="min-w-screen sticky top-0 flex flex-row bg-[#7ca982] p-4 shadow">
           <span className="font-bold">Victor</span>
-          <span className="align-self-right text-white">
+          <span className="p-4 self-end text-white">
             {sessionData.user.name}
           </span>
           <button
-            className="align-self-right hover:underline"
+            className="p-4 self-end hover:underline"
             onClick={() => void signOut()}
           >
             Sign Out
