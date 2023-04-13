@@ -27,7 +27,7 @@ const Home: NextPage = () => {
         <nav className="min-w-screen sticky top-0 flex flex-row bg-[#7ca982] p-4 shadow">
           <span className="font-bold">Victor</span>
           <span className="text-white">{sessionData.user.name}</span>
-          <span onClick={() => void signOut()}>Sign Out</span>
+          <button onClick={() => void signOut()}>Sign Out</button>
         </nav>
         <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
           <AuthShowcase />
