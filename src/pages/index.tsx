@@ -54,7 +54,7 @@ const LoggedOut: React.FC = () => {
       </Head>
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
         <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
-          <p className="font-lg text-5xl font-extrabold text-[#e0eec6]">Victor</p>
+          <p className="font-lg text-5xl font-extrabold text-[#e0eec6] sm:text-[5rem]">Victor</p>
           <AuthShowcase />
         </main>
       </div>
