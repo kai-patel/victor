@@ -24,13 +24,13 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
-        <nav className="min-w-screen sticky top-0 flex flex-row bg-[#7ca982] p-4 shadow">
-          <span className="font-bold">Victor</span>
-          <span className="p-4 justify-self-end text-white">
+        <nav className="min-w-screen sticky top-0 flex flex-row justify-end items-center bg-[#7ca982] p-2 shadow">
+          <span className="font-bold w-full">Victor</span>
+          <span className="justify-self-end text-white px-2">
             {sessionData.user.name}
           </span>
           <button
-            className="p-4 justify-self-end hover:underline"
+            className="justify-self-end px-2 min-width-max hover:underline"
             onClick={() => void signOut()}
           >
             Sign Out
@@ -67,9 +67,9 @@ const AuthShowcase: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
+      <h1 className="text-center text-5xl text-white">
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-      </p>
+      </h1>
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
