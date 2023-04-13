@@ -10,6 +10,12 @@ import { api } from "~/utils/api";
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
+  const { data: sessionData } = useSession();
+
+  if (!sessionData) {
+    return <LoggedOut />;
+  }
+
   return (
     <>
       <Head>
@@ -17,13 +23,15 @@ const Home: NextPage = () => {
         <meta name="description" content="Odds Calculator" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-col min-h-screen max-h-screen bg-red-500">
-          <nav className="sticky top-0 min-w-screen flex flex-row p-4 shadow bg-[#7ca982]">
-              <p className="font-bold">Victor</p>
-          </nav>
-          <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
-              <AuthShowcase />
-          </main>
+      <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
+        <nav className="min-w-screen sticky top-0 flex flex-row bg-[#7ca982] p-4 shadow">
+          <span className="font-bold">Victor</span>
+          <span className="text-white">{sessionData.user.name}</span>
+          <span onClick={() => void signOut()}>Sign Out</span>
+        </nav>
+        <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
+          <AuthShowcase />
+        </main>
       </div>
     </>
   );
@@ -31,19 +39,30 @@ const Home: NextPage = () => {
 
 export default Home;
 
+const LoggedOut: React.FC = () => {
+  return (
+    <>
+      <Head>
+        <title>Victor: Play to Win</title>
+        <meta name="description" content="Odds Calculator" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
+        <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
+          <AuthShowcase />
+        </main>
+      </div>
+    </>
+  );
+};
+
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined },
-  );
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
       </p>
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
