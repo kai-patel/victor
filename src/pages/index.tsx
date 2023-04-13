@@ -54,7 +54,7 @@ const LoggedOut: React.FC = () => {
       </Head>
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
         <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
-          <p className="font-lg text-[#e0eec6]">Victor</p>
+          <p className="font-lg text-5xl text-[#e0eec6]">Victor</p>
           <AuthShowcase />
         </main>
       </div>
@@ -67,7 +67,7 @@ const AuthShowcase: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <h1 className="text-center text-5xl text-white">
+      <h1 className="text-center text-white">
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
       </h1>
       <button
