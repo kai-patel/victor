@@ -209,6 +209,7 @@ const Table: React.FC = () => {
   const table = useReactTable({
     data: data,
     columns: columns,
+    defaultColumn: defaultColumn,
     getCoreRowModel: getCoreRowModel(),
     state: {
       pagination,
