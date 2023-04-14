@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
@@ -8,9 +7,11 @@ import { api } from "~/utils/api";
 // Theme: #f1f7ed #243e36 #7ca982 #e0eec6 #c2a83e
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
   const { data: sessionData } = useSession();
+
+  const { data: savedTable } = api.database.getSavedTable.useQuery(undefined, {
+    enabled: sessionData?.user !== undefined,
+  });
 
   if (!sessionData) {
     return <LoggedOut />;
@@ -24,13 +25,13 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
-        <nav className="min-w-screen sticky top-0 flex flex-row justify-end items-center bg-[#7ca982] p-2 shadow">
-          <span className="font-bold w-full">Victor</span>
-          <span className="justify-self-end text-white px-2">
+        <nav className="min-w-screen sticky top-0 flex flex-row items-center justify-end bg-[#7ca982] p-2 shadow">
+          <span className="w-full font-bold">Victor</span>
+          <span className="justify-self-end px-2 text-white">
             {sessionData.user.name}
           </span>
           <button
-            className="justify-self-end px-2 min-w-max hover:underline"
+            className="min-w-max justify-self-end px-2 hover:underline"
             onClick={() => void signOut()}
           >
             Sign Out
@@ -54,7 +55,9 @@ const LoggedOut: React.FC = () => {
       </Head>
       <div className="flex max-h-screen min-h-screen flex-col bg-red-500">
         <main className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#243e36] to-[#c2a83e]">
-          <p className="font-lg text-5xl font-extrabold text-[#e0eec6] sm:text-[5rem]">Victor</p>
+          <p className="font-lg text-5xl font-extrabold text-[#e0eec6] sm:text-[5rem]">
+            Victor
+          </p>
           <AuthShowcase />
         </main>
       </div>
