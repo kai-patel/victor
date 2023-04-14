@@ -4,14 +4,65 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 import {
+  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   PaginationState,
+  RowData,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+  }
+}
+
+// Give our default column cell renderer editing superpowers!
+const defaultColumn: Partial<ColumnDef<TableData>> = {
+  cell: ({ getValue, row: { index }, column: { id }, table }) => {
+    const initialValue = getValue();
+    // We need to keep and update the state of the cell normally
+    const [value, setValue] = useState(initialValue);
+
+    // When the input is blurred, we'll call our table meta's updateData function
+    const onBlur = () => {
+      table.options.meta?.updateData(index, id, value);
+    };
+
+    // If the initialValue is changed external, sync it up with our state
+    useEffect(() => {
+      setValue(initialValue);
+    }, [initialValue]);
+
+    return (
+      <input
+        value={value as string}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={onBlur}
+      />
+    );
+  },
+};
+
+function useSkipper() {
+  const shouldSkipRef = useRef(true);
+  const shouldSkip = shouldSkipRef.current;
+
+  // Wrap a function with this to skip a pagination reset temporarily
+  const skip = useCallback(() => {
+    shouldSkipRef.current = false;
+  }, []);
+
+  useEffect(() => {
+    shouldSkipRef.current = true;
+  });
+
+  return [shouldSkip, skip] as const;
+}
 
 // Theme: #f1f7ed #243e36 #7ca982 #e0eec6 #c2a83e
 
@@ -131,7 +182,7 @@ const Table: React.FC = () => {
     }),
   ];
 
-  const defaultData: TableData[] = [
+  const [data, setData] = useState([
     {
       item: "LIV-EVE",
       odds: "3/1",
@@ -147,10 +198,12 @@ const Table: React.FC = () => {
       odds: "13/1",
       stake: 5,
     },
-  ];
+  ]);
+
+  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
   const table = useReactTable({
-    data: defaultData,
+    data: data,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -158,6 +211,24 @@ const Table: React.FC = () => {
     },
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
+    autoResetPageIndex,
+    meta: {
+      updateData: (rowIndex, columnId, value) => {
+        // Skip page index reset until after next rerender
+        skipAutoResetPageIndex();
+        setData((old) =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex]!,
+                [columnId]: value,
+              };
+            }
+            return row;
+          })
+        );
+      },
+    },
     debugAll: true,
   });
 
