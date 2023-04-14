@@ -3,6 +3,11 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 // Theme: #f1f7ed #243e36 #7ca982 #e0eec6 #c2a83e
 
@@ -11,6 +16,60 @@ const Home: NextPage = () => {
 
   const { data: savedTable } = api.database.getSavedTable.useQuery(undefined, {
     enabled: sessionData?.user !== undefined,
+  });
+
+  type TableData = {
+    item: string;
+    odds: string;
+    stake: number;
+  };
+
+  const columnHelper = createColumnHelper<TableData>();
+
+  const columns = [
+    columnHelper.group({
+      header: "Bets",
+      footer: (props) => props.column.id,
+      columns: [
+        columnHelper.accessor("item", {
+          header: () => "Item",
+          footer: (props) => props.column.id,
+        }),
+        columnHelper.accessor("odds", {
+          header: () => "Odds",
+          footer: (props) => props.column.id,
+        }),
+        columnHelper.accessor("stake", {
+          header: () => "Stake",
+          footer: (props) => props.column.id,
+        }),
+      ],
+    }),
+  ];
+
+  const defaultData: TableData[] = [
+    {
+      item: "LIV-EVE",
+      odds: "3/1",
+      stake: 10,
+    },
+    {
+      item: "MCI v MUN",
+      odds: "2/1",
+      stake: 15,
+    },
+    {
+      item: "HAM to win Silverstone",
+      odds: "13/1",
+      stake: 5,
+    },
+  ];
+
+  const table = useReactTable({
+    data: defaultData,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+    debugAll: true,
   });
 
   if (!sessionData) {
