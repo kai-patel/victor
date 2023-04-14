@@ -17,6 +17,8 @@ const Home: NextPage = () => {
     return <LoggedOut />;
   }
 
+  console.log(savedTable);
+
   return (
     <>
       <Head>
