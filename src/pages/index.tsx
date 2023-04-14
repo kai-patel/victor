@@ -4,15 +4,19 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 import {
-  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
-  PaginationState,
-  RowData,
   useReactTable,
 } from "@tanstack/react-table";
+
+import type {
+  ColumnDef,
+  PaginationState,
+  RowData,
+} from "@tanstack/react-table";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 
 declare module "@tanstack/react-table" {
@@ -20,33 +24,6 @@ declare module "@tanstack/react-table" {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
   }
 }
-
-// Give our default column cell renderer editing superpowers!
-const defaultColumn: Partial<ColumnDef<TableData>> = {
-  cell: ({ getValue, row: { index }, column: { id }, table }) => {
-    const initialValue = getValue();
-    // We need to keep and update the state of the cell normally
-    const [value, setValue] = useState(initialValue);
-
-    // When the input is blurred, we'll call our table meta's updateData function
-    const onBlur = () => {
-      table.options.meta?.updateData(index, id, value);
-    };
-
-    // If the initialValue is changed external, sync it up with our state
-    useEffect(() => {
-      setValue(initialValue);
-    }, [initialValue]);
-
-    return (
-      <input
-        value={value as string}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={onBlur}
-      />
-    );
-  },
-};
 
 function useSkipper() {
   const shouldSkipRef = useRef(true);
@@ -158,6 +135,33 @@ const Table: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+
+  // Give our default column cell renderer editing superpowers!
+  const defaultColumn: Partial<ColumnDef<TableData>> = {
+    cell: function Cell({ getValue, row: { index }, column: { id }, table }) {
+      const initialValue = getValue();
+      // We need to keep and update the state of the cell normally
+      const [value, setValue] = useState(initialValue);
+
+      // When the input is blurred, we'll call our table meta's updateData function
+      const onBlur = () => {
+        table.options.meta?.updateData(index, id, value);
+      };
+
+      // If the initialValue is changed external, sync it up with our state
+      useEffect(() => {
+        setValue(initialValue);
+      }, [initialValue]);
+
+      return (
+        <input
+          value={value as string}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={onBlur}
+        />
+      );
+    },
+  };
 
   const columnHelper = createColumnHelper<TableData>();
 
