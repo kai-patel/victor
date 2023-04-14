@@ -164,7 +164,7 @@ const Table: React.FC = () => {
   return (
     <>
       <table className="w-full ">
-        <thead className="border bg-blue-400">
+        <thead className="border bg-[#c2a83e]">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -184,7 +184,7 @@ const Table: React.FC = () => {
             </tr>
           ))}
         </thead>
-        <tbody className="border bg-purple-300">
+        <tbody className="border bg-[#7ca982]">
           {table.getRowModel().rows.map((row) => {
             return (
               <tr key={row.id}>
