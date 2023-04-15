@@ -155,6 +155,7 @@ const Table: React.FC = () => {
 
       return (
         <input
+          className="w-full bg-[#e0eec6]"
           value={value as string}
           onChange={(e) => setValue(e.target.value)}
           onBlur={onBlur}
@@ -266,7 +267,7 @@ const Table: React.FC = () => {
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <td key={cell.id}>
+                    <td className="text-center" key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
