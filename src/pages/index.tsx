@@ -246,7 +246,11 @@ const Table: React.FC = () => {
             <tr className="border" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <th className="border" key={header.id} colSpan={header.colSpan}>
+                  <th
+                    className="border"
+                    key={header.id}
+                    colSpan={header.colSpan}
+                  >
                     {header.isPlaceholder ? null : (
                       <div>
                         {flexRender(
@@ -266,8 +270,12 @@ const Table: React.FC = () => {
             return (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
+                  console.log(cell);
                   return (
-                    <td className="text-center" key={cell.id}>
+                    <td
+                      className="border border-[#f1f7ed] text-center"
+                      key={cell.id}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
