@@ -243,10 +243,10 @@ const Table: React.FC = () => {
       <table className="w-full ">
         <thead className="border bg-[#c2a83e]">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr className="border" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <th key={header.id} colSpan={header.colSpan}>
+                  <th className="border" key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder ? null : (
                       <div>
                         {flexRender(
@@ -261,7 +261,7 @@ const Table: React.FC = () => {
             </tr>
           ))}
         </thead>
-        <tbody className="border bg-[#7ca982]">
+        <tbody className="border bg-[#e0eec6]">
           {table.getRowModel().rows.map((row) => {
             return (
               <tr key={row.id}>
