@@ -165,7 +165,7 @@ const Table: React.FC = () => {
           />
         );
       }
-      return value;
+      return (value as number).toFixed(2);
     },
   };
 
