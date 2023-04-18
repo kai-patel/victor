@@ -170,63 +170,99 @@ const Table: React.FC = () => {
 
   const columnHelper = createColumnHelper<TableData>();
 
-  const getExpectedReturn = (row: TableData): number => {
-    const odds = row.odds;
-    let impliedProbability = 0;
-    let decimalOdds = 0;
-
-    if (odds.includes("/")) {
-      // Fractional odds
-      const [nominator, denominator]: number[] = odds
-        .split("/")
-        .map((value) => parseFloat(value));
-      if (
-        nominator === undefined ||
-        denominator === undefined ||
-        Number.isNaN(nominator) ||
-        Number.isNaN(denominator)
-      ) {
-        console.error(
-          "Could not calculate implied probability from fractional odds",
-          odds
-        );
-      } else {
-        impliedProbability = denominator / (denominator + nominator);
-        decimalOdds = nominator / denominator + 1;
-      }
-    } else if (odds.includes("+")) {
-      // Positive American odds
-      const split = odds.split("+");
-      if (split[1] !== undefined) {
-        const positive = parseFloat(split[1]);
-        impliedProbability = 100 / (positive + 100);
-        decimalOdds = positive / 100 + 1;
-      } else {
+  const parseAmericanPositive = (odds: string): number => {
+    const split = odds.split("+");
+    if (split[1] !== undefined) {
+      const positive = parseFloat(split[1]);
+      if (Number.isNaN(positive)) {
         console.error(
           "Could not calculate implied probability from positive American odds",
           odds
         );
+        return -1;
       }
-    } else if (odds.includes("-")) {
-      // Negative American odds
-      const split = odds.split("-");
-      if (split[1] !== undefined) {
-        const negative = parseFloat(split[1]);
-        impliedProbability = negative / (negative + 100);
-        decimalOdds = 100 / negative + 1;
-      } else {
+      const decimalOdds = positive / 100 + 1;
+      return decimalOdds;
+    } else {
+      console.error(
+        "Could not calculate implied probability from positive American odds",
+        odds
+      );
+      return -1;
+    }
+  };
+
+  const parseAmericanNegative = (odds: string): number => {
+    const split = odds.split("-");
+    if (split[1] !== undefined) {
+      const negative = parseFloat(split[1]);
+      if (Number.isNaN(negative)) {
         console.error(
           "Could not calculate implied probability from negative American odds",
           odds
         );
+        return -1;
       }
+      const decimalOdds = 100 / negative + 1;
+      return decimalOdds;
     } else {
-      // Decimal odds
-      decimalOdds = parseFloat(odds);
-      impliedProbability = 1 / decimalOdds;
+      console.error(
+        "Could not calculate implied probability from negative American odds",
+        odds
+      );
+      return -1;
     }
+  };
 
+  const parseFractional = (odds: string): number => {
+    const [nominator, denominator]: number[] = odds
+      .split("/")
+      .map((value) => parseFloat(value));
+    if (
+      nominator === undefined ||
+      denominator === undefined ||
+      Number.isNaN(nominator) ||
+      Number.isNaN(denominator)
+    ) {
+      console.error(
+        "Could not calculate implied probability from fractional odds",
+        odds
+      );
+      return -1;
+    } else {
+      const decimalOdds = nominator / denominator + 1;
+      return decimalOdds;
+    }
+  };
+
+  const parseDecimal = (odds: string): number => {
+    const decimalOdds = parseFloat(odds);
+    if (Number.isNaN(decimalOdds)) {
+      console.error("Could not parse decimal odds", odds);
+      return -1;
+    }
+    return decimalOdds;
+  };
+
+  const parseOdds = (odds: string): number => {
+    let decimalOdds = 0;
+    if (odds.includes("/")) {
+      decimalOdds = parseFractional(odds);
+    } else if (odds.includes("+")) {
+      decimalOdds = parseAmericanPositive(odds);
+    } else if (odds.includes("-")) {
+      decimalOdds = parseAmericanNegative(odds);
+    } else {
+      decimalOdds = parseDecimal(odds);
+    }
+    return decimalOdds;
+  };
+
+  const getExpectedReturn = (row: TableData): number => {
+    const decimalOdds = parseOdds(row.odds);
+    const impliedProbability = 1 / decimalOdds;
     const payoutInclStake = decimalOdds * row.stake;
+
     return (
       payoutInclStake * impliedProbability -
       row.stake * (1 - impliedProbability)
