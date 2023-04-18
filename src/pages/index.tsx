@@ -47,6 +47,7 @@ type TableData = {
   item: string;
   odds: string;
   stake: number;
+  pnl: number;
 };
 
 const Home: NextPage = () => {
@@ -153,14 +154,17 @@ const Table: React.FC = () => {
         setValue(initialValue);
       }, [initialValue]);
 
-      return (
-        <input
-          className="w-full bg-[#e0eec6]"
-          value={value as string}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={onBlur}
-        />
-      );
+      if (id != "pnl") {
+        return (
+          <input
+            className="w-full bg-[#e0eec6] text-center"
+            value={value as string}
+            onChange={(e) => setValue(e.target.value)}
+            onBlur={onBlur}
+          />
+        );
+      }
+      return value;
     },
   };
 
@@ -183,6 +187,10 @@ const Table: React.FC = () => {
           header: () => "Stake",
           footer: (props) => props.column.id,
         }),
+        columnHelper.accessor((row) => 1, {
+          id: "pnl",
+          header: () => "Expected Return",
+        }),
       ],
     }),
   ];
@@ -192,16 +200,19 @@ const Table: React.FC = () => {
       item: "LIV-EVE",
       odds: "3/1",
       stake: 10,
+      pnl: 0,
     },
     {
       item: "MCI v MUN",
       odds: "2/1",
       stake: 15,
+      pnl: 0,
     },
     {
       item: "HAM to win Silverstone",
       odds: "13/1",
       stake: 5,
+      pnl: 0,
     },
   ]);
 
@@ -235,7 +246,7 @@ const Table: React.FC = () => {
         );
       },
     },
-    debugAll: true,
+    debugAll: false,
   });
 
   return (
@@ -270,7 +281,9 @@ const Table: React.FC = () => {
             return (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
-                  console.log(cell);
+                  {
+                    /* console.log(cell); */
+                  }
                   return (
                     <td
                       className="border border-[#f1f7ed] text-center"
