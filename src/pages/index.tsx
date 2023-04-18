@@ -170,6 +170,10 @@ const Table: React.FC = () => {
 
   const columnHelper = createColumnHelper<TableData>();
 
+  const getExpectedReturn = (row: TableData): number => {
+    return 1;
+  };
+
   const columns = [
     columnHelper.group({
       header: "Bets",
@@ -187,7 +191,7 @@ const Table: React.FC = () => {
           header: () => "Stake",
           footer: (props) => props.column.id,
         }),
-        columnHelper.accessor((row) => 1, {
+        columnHelper.accessor((row) => getExpectedReturn(row), {
           id: "pnl",
           header: () => "Expected Return",
         }),
