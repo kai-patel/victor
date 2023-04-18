@@ -47,6 +47,7 @@ type TableData = {
   item: string;
   odds: string;
   stake: number;
+  altOdds: string;
   pnl: number;
 };
 
@@ -176,8 +177,7 @@ const Table: React.FC = () => {
       const positive = parseFloat(split[1]);
       if (Number.isNaN(positive)) {
         console.error(
-          "Could not calculate implied probability from positive American odds",
-          odds
+          `Could not calculate implied probability from positive American odds, ${odds}`
         );
         return -1;
       }
@@ -185,8 +185,7 @@ const Table: React.FC = () => {
       return decimalOdds;
     } else {
       console.error(
-        "Could not calculate implied probability from positive American odds",
-        odds
+        `Could not calculate implied probability from positive American odds, ${odds}`
       );
       return -1;
     }
@@ -198,8 +197,7 @@ const Table: React.FC = () => {
       const negative = parseFloat(split[1]);
       if (Number.isNaN(negative)) {
         console.error(
-          "Could not calculate implied probability from negative American odds",
-          odds
+          `Could not calculate implied probability from negative American odds, ${odds}`
         );
         return -1;
       }
@@ -207,8 +205,7 @@ const Table: React.FC = () => {
       return decimalOdds;
     } else {
       console.error(
-        "Could not calculate implied probability from negative American odds",
-        odds
+        `Could not calculate implied probability from negative American odds, ${odds}`
       );
       return -1;
     }
@@ -225,8 +222,7 @@ const Table: React.FC = () => {
       Number.isNaN(denominator)
     ) {
       console.error(
-        "Could not calculate implied probability from fractional odds",
-        odds
+        `Could not calculate implied probability from fractional odds, ${odds}`
       );
       return -1;
     } else {
@@ -238,7 +234,7 @@ const Table: React.FC = () => {
   const parseDecimal = (odds: string): number => {
     const decimalOdds = parseFloat(odds);
     if (Number.isNaN(decimalOdds)) {
-      console.error("Could not parse decimal odds", odds);
+      console.error(`Could not parse decimal odds, ${odds}`);
       return -1;
     }
     return decimalOdds;
@@ -260,12 +256,27 @@ const Table: React.FC = () => {
 
   const getExpectedReturn = (row: TableData): number => {
     const decimalOdds = parseOdds(row.odds);
+    const altOdds = row.altOdds === "" ? 0 : parseOdds(row.altOdds);
+
+    const margin = row.altOdds === "" ? 0 : 1 / decimalOdds + 1 / altOdds - 1;
     const impliedProbability = 1 / decimalOdds;
-    const payoutInclStake = decimalOdds * row.stake;
+    const adjustedProbability = impliedProbability - margin / 2;
+    const payoutExclStake = decimalOdds * row.stake - row.stake;
+
+    /*
+    console.table({
+      decimalOdds,
+      altOdds,
+      margin,
+      impliedProbability,
+      adjustedProbability,
+      payoutExclStake,
+    });
+       */
 
     return (
-      payoutInclStake * impliedProbability -
-      row.stake * (1 - impliedProbability)
+      payoutExclStake * adjustedProbability -
+      row.stake * (1 - adjustedProbability)
     );
   };
 
@@ -280,6 +291,10 @@ const Table: React.FC = () => {
         }),
         columnHelper.accessor("odds", {
           header: () => "Odds",
+          footer: (props) => props.column.id,
+        }),
+        columnHelper.accessor("altOdds", {
+          header: () => "Alternate Odds",
           footer: (props) => props.column.id,
         }),
         columnHelper.accessor("stake", {
@@ -299,18 +314,21 @@ const Table: React.FC = () => {
       item: "LIV-EVE",
       odds: "3/1",
       stake: 10,
+      altOdds: "4/1",
       pnl: 0,
     },
     {
       item: "MCI v MUN",
       odds: "2/1",
       stake: 15,
+      altOdds: "3/1",
       pnl: 0,
     },
     {
       item: "HAM to win Silverstone",
       odds: "13/1",
       stake: 5,
+      altOdds: "15/1",
       pnl: 0,
     },
   ]);
