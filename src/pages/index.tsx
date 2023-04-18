@@ -171,7 +171,66 @@ const Table: React.FC = () => {
   const columnHelper = createColumnHelper<TableData>();
 
   const getExpectedReturn = (row: TableData): number => {
-    return 1;
+    const odds = row.odds;
+    let impliedProbability = 0;
+    let decimalOdds = 0;
+
+    if (odds.includes("/")) {
+      // Fractional odds
+      const [nominator, denominator]: number[] = odds
+        .split("/")
+        .map((value) => parseFloat(value));
+      if (
+        nominator === undefined ||
+        denominator === undefined ||
+        Number.isNaN(nominator) ||
+        Number.isNaN(denominator)
+      ) {
+        console.error(
+          "Could not calculate implied probability from fractional odds",
+          odds
+        );
+      } else {
+        impliedProbability = denominator / (denominator + nominator);
+        decimalOdds = nominator / denominator + 1;
+      }
+    } else if (odds.includes("+")) {
+      // Positive American odds
+      const split = odds.split("+");
+      if (split[1] !== undefined) {
+        const positive = parseFloat(split[1]);
+        impliedProbability = 100 / (positive + 100);
+        decimalOdds = positive / 100 + 1;
+      } else {
+        console.error(
+          "Could not calculate implied probability from positive American odds",
+          odds
+        );
+      }
+    } else if (odds.includes("-")) {
+      // Negative American odds
+      const split = odds.split("-");
+      if (split[1] !== undefined) {
+        const negative = parseFloat(split[1]);
+        impliedProbability = negative / (negative + 100);
+        decimalOdds = 100 / negative + 1;
+      } else {
+        console.error(
+          "Could not calculate implied probability from negative American odds",
+          odds
+        );
+      }
+    } else {
+      // Decimal odds
+      decimalOdds = parseFloat(odds);
+      impliedProbability = 1 / decimalOdds;
+    }
+
+    const payoutInclStake = decimalOdds * row.stake;
+    return (
+      payoutInclStake * impliedProbability -
+      row.stake * (1 - impliedProbability)
+    );
   };
 
   const columns = [
