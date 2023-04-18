@@ -52,7 +52,7 @@ type TableData = {
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
 
-  if (!sessionData) {
+  if (process.env.NODE_ENV == "production" && !sessionData) {
     return <LoggedOut />;
   }
 
@@ -67,7 +67,7 @@ const Home: NextPage = () => {
         <nav className="min-w-screen sticky top-0 flex flex-row items-center justify-end bg-[#7ca982] p-2 shadow">
           <span className="w-full font-bold">Victor</span>
           <span className="justify-self-end px-2 text-white">
-            {sessionData.user.name}
+            {sessionData?.user.name}
           </span>
           <button
             className="min-w-max justify-self-end px-2 hover:underline"
