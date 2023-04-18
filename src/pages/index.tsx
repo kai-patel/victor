@@ -158,6 +158,7 @@ const Table: React.FC = () => {
       if (id != "pnl") {
         return (
           <input
+            type="text"
             className="w-full bg-[#e0eec6] text-center"
             value={value as string}
             onChange={(e) => setValue(e.target.value)}
@@ -367,8 +368,8 @@ const Table: React.FC = () => {
   });
 
   return (
-    <>
-      <table className="w-full ">
+    <div>
+      <table className="w-full">
         <thead className="border bg-[#c2a83e]">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr className="border" key={headerGroup.id}>
@@ -403,6 +404,7 @@ const Table: React.FC = () => {
                   }
                   return (
                     <td
+                      tabIndex={0}
                       className="border border-[#f1f7ed] text-center"
                       key={cell.id}
                     >
@@ -482,6 +484,6 @@ const Table: React.FC = () => {
       </div>
       <div>{table.getRowModel().rows.length} Rows</div>
       <hr />
-    </>
+    </div>
   );
 };
